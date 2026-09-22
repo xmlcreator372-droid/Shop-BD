@@ -1,0 +1,53 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && (
+        firestore.exists(/databases/(default)/documents/adminUsers/$(request.auth.uid)) ||
+        request.auth.token.admin == true
+      );
+    }
+
+    // Public read for media assets
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+
+    // Product, Category, Banner, Offer, Branding images: Admin write only
+    match /products/{fileName} {
+      allow write: if isAdmin();
+    }
+    match /categories/{fileName} {
+      allow write: if isAdmin();
+    }
+    match /banners/{fileName} {
+      allow write: if isAdmin();
+    }
+    match /offers/{fileName} {
+      allow write: if isAdmin();
+    }
+    match /branding/{fileName} {
+      allow write: if isAdmin();
+    }
+
+    // User profile avatars
+    match /users/{userId}/{fileName} {
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Review images
+    match /reviews/{fileName} {
+      allow write: if isAuthenticated();
+    }
+
+    // Payment proof screenshots
+    match /payments/{userId}/{fileName} {
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Shop BD",
+  "description": "Complete fashion ecommerce platform with user and admin panels for Bangladesh market",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
